@@ -2,22 +2,32 @@
 #include <SPI.h>
 #include <Pixy2.h>
 
+//set constants
+//pin numbers
+DC_DIRECTION = ... //low = CW, high = CCW
+DC_PWM = ... // controls speed, 0 = not moving, max is 100
+DC_BRAKE = ... //set low to release brakes, high to activate brakes
+
+//Initialize objects
 Pixy2 pixy;
+
+Servo wheelServo;
+Servo armServo;
+Servo elbowServo;
+Servo clawServo;
+
 
 void setup() {
   //Servos:
-  Servo wheelServo;
-  Servo armServo;
-  Servo elbowServo;
-  Servo clawServo;
-
   wheelServo.attach(...);//replace ... with appropriate pin number on arduino
   armServo.attach(...);
   elbowServo.attach(...);
   clawServo.attach(...);
 
   //DC Motors:
-
+  pinMode(DC_DIRECTION, OUTPUT);
+  pinMode(DC_PWM, OUTPUT);
+  pinMode(DC_BRAKE, OUTPUT);
 
   //PixyCam:
 
@@ -30,7 +40,7 @@ void setup() {
 
 void pick_up_rock()
 {
-
+  //servoObject.write(pos) sets the position of the servo (degrees), I think it should be between 0 and 180
 }
 
 void rotate_rover()
@@ -48,7 +58,7 @@ float readPixyCam() //Not sure about the correct return type
 
 }
 
-float readIRSensors() //not sure about the correct return type
+bool readIRSensors() 
 {
 
 }
