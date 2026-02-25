@@ -45,7 +45,8 @@ void setup() {
   digitalWrite(DC_PWM, 0); //initialize motor to 0 movement
 
   //PixyCam:
-
+  Serial.begin(9600);
+  pixy.init();
 
   //IR Sensors:
   pinMode(RECV_PIN, INPUT); // Input of the sensor
@@ -76,6 +77,7 @@ void rotate_rover(int degrees)
   //but since we don't have any of that right now, I just set degrees as a parameter
   if (degrees >= 0 && degrees <= 180) //this probably depends on the servo, check with electronics or fabrication team
     wheelServo.write(degrees);
+    
 }
 
 void move(int speed)
@@ -92,7 +94,12 @@ void motorStop()
 
 float readPixyCam() //Not sure about the correct return type
 {
-
+  int num_blocks = getBlocks();
+  for(int i=0; i < num_blocks; i++)
+    if (pixy.ccc.blocks[i].m_index == tracking_index)
+    {
+      return pixy.ccc.blocks[i].
+    }
 }
 
 bool readIRSensors() 
