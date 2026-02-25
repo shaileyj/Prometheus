@@ -41,6 +41,9 @@ void setup() {
   pinMode(DC_PWM, OUTPUT);
   pinMode(DC_BRAKE, OUTPUT);
 
+  digitalWrite(DC_BRAKE, LOW); //releasing the break
+  digitalWrite(DC_PWM, 0); //initialize motor to 0 movement
+
   //PixyCam:
 
 
@@ -75,10 +78,17 @@ void rotate_rover(int degrees)
     wheelServo.write(degrees);
 }
 
-void move()
+void move(int speed)
 {
-
+  digitalWrite(DC_BRAKE, LOW); // release brake
+  digitalWrite(DC_DIRECTION, LOW);
+  analogWrite(DC_PWM, speed);
 }
+
+void motorStop()
+{
+  analogWrite(DC_PWM, 0); // remove power
+  digitalWrite(DC_BRAKE, HIGH); 
 
 float readPixyCam() //Not sure about the correct return type
 {
