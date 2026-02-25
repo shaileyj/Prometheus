@@ -10,12 +10,15 @@ const int DC_BRAKE = ...; //set low to release brakes, high to activate brakes
 const int WHEEL_SERVO_PIN = ...;
 const int ARM_SERVO_PIN = ...;
 const int CLAW_SERVO_PIN - ...;
+const int RECV_PIN = ...; // Pin number for the IR Sensor
+
 
 //other constants
 const int CLAW_CLOSED = ...;
 const int CLAW_OPEN = ...;
 const int ARM_UP = ...;
 const int ARM_DOWN = ...;
+
 
 //Initialize objects
 Pixy2 pixy;
@@ -38,11 +41,16 @@ void setup() {
   pinMode(DC_PWM, OUTPUT);
   pinMode(DC_BRAKE, OUTPUT);
 
+  digitalWrite(DC_BRAKE, LOW); //releasing the break
+  digitalWrite(DC_PWM, 0); //initialize motor to 0 movement
+
   //PixyCam:
   Serial.begin(9600);
   pixy.init();
 
   //IR Sensors:
+  pinMode(RECV_PIN, INPUT); // Input of the sensor
+
 
   //Other
   bool rock_collected = False;
@@ -60,6 +68,7 @@ void pick_up_rock()
   clawServo.write(CLAW_CLOSED);
   delay(1000);
   armServo.write(ARM_UP); //I'm not sure if this is actually necessary
+
 }
 
 void rotate_rover(int degrees)
@@ -71,12 +80,19 @@ void rotate_rover(int degrees)
     
 }
 
-void move()
+void move(int speed)
 {
-
+  digitalWrite(DC_BRAKE, LOW); // release brake
+  digitalWrite(DC_DIRECTION, LOW);
+  analogWrite(DC_PWM, speed);
 }
 
-float readPixyCam(int tracking_index) //Not sure about the correct return type
+void motorStop()
+{
+  analogWrite(DC_PWM, 0); // remove power
+  digitalWrite(DC_BRAKE, HIGH); 
+
+float readPixyCam() //Not sure about the correct return type
 {
   int num_blocks = getBlocks();
   for(int i=0; i < num_blocks; i++)
@@ -88,6 +104,28 @@ float readPixyCam(int tracking_index) //Not sure about the correct return type
 
 bool readIRSensors() 
 {
+  /*
+
+  The return type here should be used in tandem with the PixyCam return type to identify objects.
+  The IR Sensor will just tell you if an object is there. We need to use this function with the PixyCam to
+  determine whether it is the object we want or not.
+
+  */
+  
+  // Wait in between calling the command so the sensor runs in increments
+  delay(500);
+  // Read the sensor value
+  int objectVisible = digitalRead(RECV_PIN);
+  if (objectVisible == LOW){
+    // Obstacle is detected
+    return true;
+  }
+  else {
+    // Continue to return false unless object is detected
+    return false;
+    // Turn the rover to look in another direction
+  }
+  delay(500);
 
 }
 
@@ -95,6 +133,7 @@ void loop()
 {
   // put your main code here, to run repeatedly:
   input = readPixyCam();
+  ir_input = readIRSensors(); // Data from IR Sensors
   if (...)
   {
     //can't locate rock -> rotate
