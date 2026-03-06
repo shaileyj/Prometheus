@@ -18,7 +18,8 @@ const int CLAW_CLOSED = ...;
 const int CLAW_OPEN = ...;
 const int ARM_UP = ...;
 const int ARM_DOWN = ...;
-
+const int CENTER_X = 158;
+const int CENTER_Y = 104;
 
 //Initialize objects
 Pixy2 pixy;
@@ -92,15 +93,6 @@ void motorStop()
   analogWrite(DC_PWM, 0); // remove power
   digitalWrite(DC_BRAKE, HIGH); 
 
-float readPixyCam() //Not sure about the correct return type
-{
-  int num_blocks = getBlocks();
-  for(int i=0; i < num_blocks; i++)
-    if (pixy.ccc.blocks[i].m_index == tracking_index)
-    {
-      return pixy.ccc.blocks[i].
-    }
-}
 
 bool readIRSensors() 
 {
@@ -129,31 +121,50 @@ bool readIRSensors()
 
 }
 
+int speed = 0;
+int direction = 0;
+int threshold = 10; //need to do some testing to find exact value, 
+                    //this is the threshold of x pixels where if the center of the object is
+                    //more than threshold pixels in the x direction away from the center of the
+                    //image, we rotate
+int rotation_rate = 2; //how fast we rotate when we need to adjust, also needs tuning
+
 void loop() 
 {
   // put your main code here, to run repeatedly:
-  input = readPixyCam();
-  ir_input = readIRSensors(); // Data from IR Sensors
-  if (...)
-  {
-    //can't locate rock -> rotate
-    rotate_rover();
-  }
-  else if (...) //can see rock
-  {
-    //continue moving towards rock
-    rotate_rover();
-    move();
-  }
-  else if(...) //rock is right in front of us
+  bool ir_input = readIRSensors(); // Data from IR Sensors
+  int num_blocks = getBlocks(); //updates pixy data
+  if() //rock is right in front of us (IR sensor detects rock?)
   {
     //pick up rock
-    bool success = pick_up_rock();
+    pick_up_rock();
+    bool success = ...;
+    if (!success)
+    {
+      readjust();
+    }
+  }
+  else if (ir_input && num_blocks > 0) //can see rock ()
+  {
+    //continue moving towards rock
+    int x = pixy.ccc.blocks[0].m_x;
+    if (x > CENTER_X + threshold || x < CENTER_X - threshold)
+    {   //rock is too far right   or    rock is too far left
+      int rotation = (x-CENTER_X) * rotation_rate;
+      rotate_rover(rotation);
+      direction += rotation;
+    }
+    move(speed);
   }
   else if(...)// we have rock already
   {
     //move back to base
     rotate_rover();
     move();
+  }
+  else if ()
+  {
+    //can't locate rock in camera field of view -> rotate
+    rotate_rover(...);
   }
 }
