@@ -132,6 +132,7 @@ int rotation_rate = 2; //how fast we rotate when we need to adjust, also needs t
 void loop() 
 {
   // put your main code here, to run repeatedly:
+<<<<<<< Updated upstream
   bool ir_input = readIRSensors(); // Data from IR Sensors
   int num_blocks = getBlocks(); //updates pixy data
   if() //rock is right in front of us (IR sensor detects rock?)
