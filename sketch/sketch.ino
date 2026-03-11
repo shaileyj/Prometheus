@@ -21,6 +21,9 @@ const int ARM_DOWN = ...;
 const int CENTER_X = 158;
 const int CENTER_Y = 104;
 
+//IR Sensor value (default; nothing is there)
+int objectVisible = LOW;
+
 //Initialize objects
 Pixy2 pixy;
 
@@ -107,8 +110,8 @@ bool readIRSensors()
   // Wait in between calling the command so the sensor runs in increments
   delay(500);
   // Read the sensor value
-  int objectVisible = digitalRead(RECV_PIN);
-  if (objectVisible == LOW){
+  objectVisible = digitalRead(RECV_PIN);
+  if (objectVisible == HIGH){
     // Obstacle is detected
     return true;
   }
