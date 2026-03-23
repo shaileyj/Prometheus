@@ -132,13 +132,18 @@ int threshold = 10; //need to do some testing to find exact value,
                     //image, we rotate
 int rotation_rate = 2; //how fast we rotate when we need to adjust, also needs tuning
 
+void readjust()
+{
+  // Assuming that this 
+}
+
 void loop() 
 {
   // put your main code here, to run repeatedly:
 <<<<<<< Updated upstream
   bool ir_input = readIRSensors(); // Data from IR Sensors
   int num_blocks = getBlocks(); //updates pixy data
-  if() //rock is right in front of us (IR sensor detects rock?)
+  if(ir_input) //rock is right in front of us (IR sensor detects rock?)
   {
     //pick up rock
     pick_up_rock();
