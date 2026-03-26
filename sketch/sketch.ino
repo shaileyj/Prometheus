@@ -128,7 +128,8 @@ bool readIRSensors()
 void readjust()
 {
   // Assuming that this means that the rock is in range but missed
-  rotate_rover(1); // chose this value randomly. ideally should be smaller movement than rotate_rover()
+  rotate_rover(1); // chose this value randomly. ideally should be smaller movement than rotate_rover() to fine tune
+  // should we also move backwards a bit?
   pick_up_rock();
 }
 
