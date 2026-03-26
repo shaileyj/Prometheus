@@ -124,6 +124,14 @@ bool readIRSensors()
 
 }
 
+
+void readjust()
+{
+  // Assuming that this means that the rock is in range but missed
+  rotate_rover(1); // chose this value randomly. ideally should be smaller movement than rotate_rover()
+  pick_up_rock();
+}
+
 int speed = 0;
 int direction = 0;
 int threshold = 10; //need to do some testing to find exact value, 
@@ -132,20 +140,18 @@ int threshold = 10; //need to do some testing to find exact value,
                     //image, we rotate
 int rotation_rate = 2; //how fast we rotate when we need to adjust, also needs tuning
 
-void readjust()
-{
-  // Assuming that this 
-}
-
 void loop() 
 {
   // put your main code here, to run repeatedly:
 <<<<<<< Updated upstream
   bool ir_input = readIRSensors(); // Data from IR Sensors
   int num_blocks = getBlocks(); //updates pixy data
-  if(ir_input) //rock is right in front of us (IR sensor detects rock?)
+  int x = pixy.ccc.blocks[0].m_x;
+  if(ir_input && (x <= CENTER_X + threshold || x >= CENTER_X - threshold)) //rock is right in front of us (IR sensor detects rock?)
   {
+    //modified to only pick up if the rock is within range and detected by sensor
     //pick up rock
+    motorStop();
     pick_up_rock();
     bool success = ...;
     if (!success)
@@ -156,7 +162,6 @@ void loop()
   else if (ir_input && num_blocks > 0) //can see rock ()
   {
     //continue moving towards rock
-    int x = pixy.ccc.blocks[0].m_x;
     if (x > CENTER_X + threshold || x < CENTER_X - threshold)
     {   //rock is too far right   or    rock is too far left
       int rotation = (x-CENTER_X) * rotation_rate;
@@ -171,9 +176,9 @@ void loop()
     rotate_rover();
     move();
   }
-  else if ()
+  else if (ir_input && num_blocks == 0) //rock is not detected in field of vision
   {
     //can't locate rock in camera field of view -> rotate
-    rotate_rover(...);
+      rotate_rover(...); 
   }
 }
