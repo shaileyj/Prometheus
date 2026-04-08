@@ -97,6 +97,16 @@ void motorStop()
   digitalWrite(DC_BRAKE, HIGH); 
 
 
+float readPixyCam() //Not sure about the correct return type
+{
+  int num_blocks = getBlocks();
+  for(int i=0; i < num_blocks; i++)
+    if (pixy.ccc.blocks[i].m_index == tracking_index)
+    {
+      return pixy.ccc.blocks[i].
+    }
+}
+
 bool readIRSensors() 
 {
   /*
