@@ -64,6 +64,21 @@ void setup() {
   clawServo.write(CLAW_OPEN);
 }
 
+
+void search_for_rock() 
+{
+  rotate_rover(90);  // scanning environment for rock
+
+  move(80);  // low speed?
+
+  delay(500);
+
+// in case the pixycam needs time to process, we may need to set a delay
+  motorStop();
+  delay(200);
+}
+
+
 void pick_up_rock()
 {
   //servoObject.write(pos) sets the position of the servo (degrees), I think it should be between 0 and 180
@@ -158,6 +173,15 @@ void loop()
   bool ir_input = readIRSensors(); // Data from IR Sensors
   int num_blocks = getBlocks(); //updates pixy data
   int x = pixy.ccc.blocks[0].m_x;
+  bool ir_input = readIRSensors();
+  int pixy_data = readPixyCam();
+
+  if (pixy_data == -1) // search mode if no rock has been detected
+  {
+    search_for_rock();
+  }
+
+  
   if(ir_input && (x <= CENTER_X + threshold || x >= CENTER_X - threshold)) //rock is right in front of us (IR sensor detects rock?)
   {
     //modified to only pick up if the rock is within range and detected by sensor
