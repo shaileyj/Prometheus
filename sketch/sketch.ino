@@ -72,7 +72,6 @@ void search_for_rock()
   move(80);  // low speed?
 
   delay(500);
-
 // in case the pixycam needs time to process, we may need to set a delay
   motorStop();
   delay(200);
@@ -158,6 +157,8 @@ void readjust()
   pick_up_rock();
 }
 
+
+
 int speed = 0;
 int direction = 0;
 int threshold = 10; //need to do some testing to find exact value, 
@@ -172,6 +173,7 @@ void loop()
 <<<<<<< Updated upstream
   bool ir_input = readIRSensors(); // Data from IR Sensors
   int num_blocks = getBlocks(); //updates pixy data
+  int signature = pixy.ccc.blocks[0].m_signature
   int x = pixy.ccc.blocks[0].m_x;
   bool ir_input = readIRSensors();
   int pixy_data = readPixyCam();
@@ -194,9 +196,10 @@ void loop()
       readjust();
     }
   }
-  else if (ir_input && num_blocks > 0) //can see rock ()
+  else if (ir_input && num_blocks > 0 && signature == 1) //can see rock ()
   {
-    //continue moving towards rock
+    // Note - 1 is the arbitrary signature for the red block
+    // continue moving towards rock
     if (x > CENTER_X + threshold || x < CENTER_X - threshold)
     {   //rock is too far right   or    rock is too far left
       int rotation = (x-CENTER_X) * rotation_rate;
@@ -205,11 +208,23 @@ void loop()
     }
     move(speed);
   }
-  else if(...)// we have rock already
+  else if(success)// we have rock already
   {
-    //move back to base
-    rotate_rover();
-    move();
+    // Desposit/hold rock
+    // Move back to base - look for the blue color signature
+    // Arbitrary number for blue signature is 2
+    if(num_blocks < 1 && signature != 2)
+    {
+      rotate_rover(...); // decide num of degrees later
+    }
+    else if (num_blocks > 1 && signature == 2)
+    {
+      move(...); // move forward until the rover is at the base
+    }
+    else
+    {
+      break
+    }
   }
   else if (ir_input && num_blocks == 0) //rock is not detected in field of vision
   {
