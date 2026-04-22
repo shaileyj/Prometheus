@@ -190,7 +190,8 @@ void loop()
     //pick up rock
     motorStop();
     pick_up_rock();
-    bool success = ...;
+    
+    bool success = ;
     if (!success)
     {
       readjust();
