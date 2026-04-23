@@ -22,6 +22,15 @@ const int ARM_TEST = ...;
 const int CENTER_X = 158;
 const int CENTER_Y = 104;
 
+int speed = 100;
+int direction = 0;
+int threshold = 10; //need to do some testing to find exact value, 
+                    //this is the threshold of x pixels where if the center of the object is
+                    //more than threshold pixels in the x direction away from the center of the
+                    //image, we rotate
+int rotation_rate = 2; //how fast we rotate when we need to adjust, also needs tuning
+bool success = false;
+
 //IR Sensor value (default; nothing is there)
 int objectVisible = LOW;
 
@@ -58,7 +67,7 @@ void setup() {
 
 
   //Other
-  bool rock_collected = False;
+  bool rock_collected = false;
 
   //set rover to inital state
   armServo.write(ARM_UP);
@@ -73,14 +82,13 @@ void search_for_rock()
   move(80);  // low speed?
 
   delay(500);
-
 // in case the pixycam needs time to process, we may need to set a delay
   motorStop();
   delay(200);
 }
 
 
-void pick_up_rock()
+bool pick_up_rock()
 {
   //servoObject.write(pos) sets the position of the servo (degrees), I think it should be between 0 and 180
   float no_rock_time = 0;
@@ -91,8 +99,6 @@ void pick_up_rock()
   clawServo.write(CLAW_CLOSED);
   delay(1000);
   armServo.write(ARM_UP); //I'm not sure if this is actually necessary
-<<<<<<< Updated upstream
-=======
   return true; // Check if the rock is actually picked up before hard-coding bool value as true (REVISE!)
 
   // Arm Down all the way
@@ -105,7 +111,10 @@ void pick_up_rock()
   // else, keep trying to pick up the rock 
 
   // try to figure out a way to 'jiggle' the rock so it stays in the claw
->>>>>>> Stashed changes
+
+  return true; // Check if the rock is actually picked up before hard-coding bool value as true (REVISE!)
+
+  // try to figure out a way to 'jiggle' the rock so it stays in the claw
 
 }
 
@@ -113,8 +122,13 @@ void rotate_rover(int degrees)
 {
   //we might want to move the code that actually calculates how much to rotate it into here
   //but since we don't have any of that right now, I just set degrees as a parameter
-  if (degrees >= 0 && degrees <= 180) //this probably depends on the servo, check with electronics or fabrication team
+  if (degrees >= 0 && degrees <= 180)
+  {
+    //this probably depends on the servo, check with electronics or fabrication team
     wheelServo.write(degrees);
+    direction += degrees;
+  }
+
     
 }
 
@@ -168,6 +182,14 @@ bool readIRSensors()
 
 }
 
+/*
+
+Order of the If Statements
+- 
+
+
+*/
+
 
 void readjust()
 {
@@ -177,62 +199,59 @@ void readjust()
   pick_up_rock();
 }
 
-int speed = 0;
-int direction = 0;
-int threshold = 10; //need to do some testing to find exact value, 
-                    //this is the threshold of x pixels where if the center of the object is
-                    //more than threshold pixels in the x direction away from the center of the
-                    //image, we rotate
-int rotation_rate = 2; //how fast we rotate when we need to adjust, also needs tuning
-
 void loop() 
 {
   // put your main code here, to run repeatedly:
-<<<<<<< Updated upstream
   bool ir_input = readIRSensors(); // Data from IR Sensors
   int num_blocks = getBlocks(); //updates pixy data
+  int signature = pixy.ccc.blocks[0].m_signature
   int x = pixy.ccc.blocks[0].m_x;
   bool ir_input = readIRSensors();
   int pixy_data = readPixyCam();
 
-  if (pixy_data == -1) // search mode if no rock has been detected
+  if (success)// we have rock already
   {
-    search_for_rock();
+    // Desposit/hold rock
+    // Move back to base - look for the blue color signature
+    // Arbitrary number for blue signature is 2
+    if(num_blocks < 0 && signature != 2)
+    {
+      rotate_rover(...); // decide num of degrees later
+    }
+    else if (num_blocks > 0 && signature == 2)
+    {
+      move(...); // move forward until the rover is at the base
+    }
+    else
+    {
+      break
+    }
   }
-
-  
-  if(ir_input && (x <= CENTER_X + threshold || x >= CENTER_X - threshold)) //rock is right in front of us (IR sensor detects rock?)
+  else if(ir_input && (x <= CENTER_X + threshold || x >= CENTER_X - threshold) && signature == 1) //rock is right in front of us (IR sensor detects rock?)
   {
     //modified to only pick up if the rock is within range and detected by sensor
     //pick up rock
     motorStop();
-    pick_up_rock();
-    bool success = ...;
+    bool success = pick_up_rock();
     if (!success)
     {
       readjust();
     }
   }
-  else if (ir_input && num_blocks > 0) //can see rock ()
+  else if (ir_input && num_blocks > 0 && signature == 1) //can see rock ()
   {
-    //continue moving towards rock
+    // Note - 1 is the arbitrary signature for the red block
+    // continue moving towards rock
     if (x > CENTER_X + threshold || x < CENTER_X - threshold)
     {   //rock is too far right   or    rock is too far left
       int rotation = (x-CENTER_X) * rotation_rate;
       rotate_rover(rotation);
-      direction += rotation;
     }
     move(speed);
-  }
-  else if(...)// we have rock already
-  {
-    //move back to base
-    rotate_rover();
-    move();
   }
   else if (ir_input && num_blocks == 0) //rock is not detected in field of vision
   {
     //can't locate rock in camera field of view -> rotate
-      rotate_rover(...); 
+      search_for_rock();
   }
 }
