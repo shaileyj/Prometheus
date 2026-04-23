@@ -18,6 +18,7 @@ const int CLAW_CLOSED = ...;
 const int CLAW_OPEN = ...;
 const int ARM_UP = ...;
 const int ARM_DOWN = ...;
+const int ARM_TEST = ...;
 const int CENTER_X = 158;
 const int CENTER_Y = 104;
 
@@ -82,11 +83,29 @@ void search_for_rock()
 void pick_up_rock()
 {
   //servoObject.write(pos) sets the position of the servo (degrees), I think it should be between 0 and 180
+  float no_rock_time = 0;
+  float rock_time = 0;
+
   armServo.write(ARM_DOWN);
   delay(1000);//wait one second.. (may need to tune this to the actual amount of time it takes for servo to move down)
   clawServo.write(CLAW_CLOSED);
   delay(1000);
   armServo.write(ARM_UP); //I'm not sure if this is actually necessary
+<<<<<<< Updated upstream
+=======
+  return true; // Check if the rock is actually picked up before hard-coding bool value as true (REVISE!)
+
+  // Arm Down all the way
+  // Arm up to test degree value (measure elapsed time)
+  // Claw opens
+  // Tries to pick up rock
+  // Lift to test degree value and measure this elapsed time
+  // check with pixy cam at test degree value to see if the rock is detected (signature)
+  // if elapsed time 2 > elapsed time 1, then the rock was picked up and return true
+  // else, keep trying to pick up the rock 
+
+  // try to figure out a way to 'jiggle' the rock so it stays in the claw
+>>>>>>> Stashed changes
 
 }
 
