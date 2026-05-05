@@ -91,15 +91,37 @@ void search_for_rock()
 bool pick_up_rock()
 {
   //servoObject.write(pos) sets the position of the servo (degrees), I think it should be between 0 and 180
-  float no_rock_time = 0;
-  float rock_time = 0;
+  long no_rock_time = 0;
+  long rock_time = 0;
 
+  long start_no_rock_test = millis();
+  armServo.write(ARM_DOWN);
+  delay(1000);
+  clawServo.write(CLAW_CLOSED);
+  delay(1000);
+  armServo.write(ARM_UP);
+  long end_no_rock_test = millis();
+  no_rock_time = end_no_rock_test - start_no_rock_test;
+
+  clawServo.write(CLAW_OPEN);
+  long start_rock_test = millis();
   armServo.write(ARM_DOWN);
   delay(1000);//wait one second.. (may need to tune this to the actual amount of time it takes for servo to move down)
   clawServo.write(CLAW_CLOSED);
   delay(1000);
   armServo.write(ARM_UP); //I'm not sure if this is actually necessary
-  return true; // Check if the rock is actually picked up before hard-coding bool value as true (REVISE!)
+  long end_rock_test = millis();
+  rock_time = end_rock_test - start_no_rock_test;
+  
+  if (rock_time > no_rock_time)
+  {
+    return true;
+  }
+  
+  else
+  {
+    pick_up_rock();
+  }
 
   // Arm Down all the way
   // Arm up to test degree value (measure elapsed time)
