@@ -1,6 +1,7 @@
 #include <Servo.h>
 #include <SPI.h>
 #include <Pixy2.h>
+#include <AFMotor.h>
 
 //set constants
 //pin numbers
