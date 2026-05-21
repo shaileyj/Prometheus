@@ -3,6 +3,7 @@
 #include <Pixy2.h>
 #include <AFMotor.h>
 
+// test comment
 //set constants
 //pin numbers
 const int DC_DIRECTION = ...; //low = CW, high = CCW
