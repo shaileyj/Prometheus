@@ -63,6 +63,7 @@ void setup() {
   //PixyCam:
   Serial.begin(9600);
   pixy.init();
+  pixy.setLamp(1,1);
 
   //IR Sensors:
   pinMode(RECV_PIN, INPUT); // Input of the sensor
@@ -90,7 +91,7 @@ void search_for_rock()
 }
 
 
-bool pick_up_rock()
+bool pick_up_rock(int signature)
 {
   //servoObject.write(pos) sets the position of the servo (degrees), I think it should be between 0 and 180
   long no_rock_time = 0;
@@ -104,25 +105,23 @@ bool pick_up_rock()
   armServo.write(ARM_UP);
   long end_no_rock_test = millis();
   no_rock_time = end_no_rock_test - start_no_rock_test;
-
-  clawServo.write(CLAW_OPEN);
-  long start_rock_test = millis();
-  armServo.write(ARM_DOWN);
-  delay(1000);//wait one second.. (may need to tune this to the actual amount of time it takes for servo to move down)
-  clawServo.write(CLAW_CLOSED);
-  delay(1000);
-  armServo.write(ARM_UP); //I'm not sure if this is actually necessary
-  long end_rock_test = millis();
-  rock_time = end_rock_test - start_no_rock_test;
   
-  if (rock_time > no_rock_time)
+  if (rock_time > no_rock_time && signature != 2)
   {
     return true;
   }
   
   else
   {
-    pick_up_rock();
+    clawServo.write(CLAW_OPEN);
+    long start_rock_test = millis();
+    armServo.write(ARM_DOWN);
+    delay(1000);//wait one second.. (may need to tune this to the actual amount of time it takes for servo to move down)
+    clawServo.write(CLAW_CLOSED);
+    delay(1000);
+    armServo.write(ARM_UP); //I'm not sure if this is actually necessary
+    long end_rock_test = millis();
+    rock_time = end_rock_test - start_no_rock_test;
   }
 
   // Arm Down all the way
