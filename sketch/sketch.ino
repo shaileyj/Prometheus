@@ -10,7 +10,7 @@ const int DC_PWM = ...; // controls speed, 0 = not moving, max is 100
 const int DC_BRAKE = ...; //set low to release brakes, high to activate brakes
 const int WHEEL_SERVO_PIN = ...;
 const int ARM_SERVO_PIN = ...;
-const int CLAW_SERVO_PIN - ...;
+const int CLAW_SERVO_PIN = ...;
 const int RECV_PIN = ...; // Pin number for the IR Sensor
 
 
@@ -46,15 +46,24 @@ Servo clawServo;
 
 void setup() {
   //Servos:
-  wheelServo.attach(WHEEL_SERVO_PIN);//replace ... with appropriate pin number on arduino
+  wheelServo.attach(A4);//replace ... with appropriate pin number on arduino
   armServo.attach(ARM_SERVO_PIN);
   //elbowServo.attach(...); from my understanding we're not using this anymore
   clawServo.attach(CLAW_SERVO_PIN);
 
   //DC Motors:
+  //Motor 1:
   pinMode(DC_DIRECTION, OUTPUT);
   pinMode(DC_PWM, OUTPUT);
   pinMode(DC_BRAKE, OUTPUT);
+  
+  digitalWrite(DC_BRAKE, LOW); //releasing the break
+  digitalWrite(DC_PWM, 0); //initialize motor to 0 movement
+
+  //Motor 2:
+  pinMode(DC_DIRECTION, OUTPUT);
+  pinMode(DC_PWM, OUTPUT);
+  pinMode(DC_BRAKE, OUTPUT);  
 
   digitalWrite(DC_BRAKE, LOW); //releasing the break
   digitalWrite(DC_PWM, 0); //initialize motor to 0 movement
@@ -65,7 +74,7 @@ void setup() {
   pixy.setLamp(1,1);
 
   //IR Sensors:
-  pinMode(RECV_PIN, INPUT); // Input of the sensor
+  pinMode(A1, INPUT); // Input of the sensor
 
 
   //Other
